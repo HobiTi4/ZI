@@ -9,7 +9,7 @@ class TestLab3RC5(unittest.TestCase):
         self.w = 16
         self.r = 8
         self.b = 16
-        self.password = "loxar_secure_pass"
+        self.password = "31fdsFDSKL12DSdffy7sq433eif21FsdkhjDS"
         self.key = derive_key(self.password, self.b)
         self.rc5 = RC5(self.w, self.r, self.key)
 

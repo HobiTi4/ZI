@@ -39,6 +39,7 @@ def cesaro_test(gen_func, count):
 
 
 def run_lab1_algorithm(m, a, c, x0, num_count):
+    num_count = min(num_count, 1000000)
     lcg = LCG(m, a, c, x0)
     generated_numbers = []
 
