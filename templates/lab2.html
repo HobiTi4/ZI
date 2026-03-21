@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab 2 - MD5 Hash</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5 mb-5">
+        <a href="/" class="btn btn-secondary mb-3">&larr; Back to list</a>
+        <h2>MD5 Hashing Algorithm (RFC 1321)</h2>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card p-3 mb-3 shadow-sm h-100">
+                    <h5>Hash a String</h5>
+                    <form method="POST">
+                        <input type="hidden" name="action" value="string">
+                        <div class="mb-3">
+                            <label>Input String</label>
+                            <input type="text" name="text_input" class="form-control" placeholder="Enter text..." required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 mt-auto">Generate Hash</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card p-3 mb-3 shadow-sm h-100">
+                    <h5>Hash a File</h5>
+                    <form method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="action" value="file">
+                        <div class="mb-3">
+                            <label>Select File</label>
+                            <div class="input-group">
+                                <label class="btn btn-outline-secondary mb-0">
+                                    Choose File
+                                    <input type="file" name="file_input" style="display: none;" onchange="this.parentElement.nextElementSibling.value = this.files.length > 0 ? this.files[0].name : 'No file chosen'">
+                                </label>
+                                <input type="text" class="form-control bg-white text-muted" value="No file chosen" readonly>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Generate Hash</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card p-3 mb-3 shadow-sm h-100">
+                    <h5>Check File Integrity</h5>
+                    <form method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="action" value="integrity">
+                        <div class="mb-3">
+                            <label>Select File</label>
+                            <div class="input-group">
+                                <label class="btn btn-outline-secondary mb-0">
+                                    Choose File
+                                    <input type="file" name="file_check" style="display: none;" onchange="this.parentElement.nextElementSibling.value = this.files.length > 0 ? this.files[0].name : 'No file chosen'">
+                                </label>
+                                <input type="text" class="form-control bg-white text-muted" value="No file chosen" readonly>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label>Expected MD5 Hash</label>
+                            <input type="text" name="expected_hash" class="form-control" required placeholder="Hex format...">
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Check Integrity</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {% if result %}
+        <div class="card p-4 shadow-sm mt-3 {% if result.type == 'Integrity' and not result.intact %}border-danger{% else %}border-success{% endif %}">
+
+            {% if result.type == 'Integrity' %}
+                <h4 class="mb-3">Integrity Check Result:</h4>
+
+                {% if result.intact %}
+                    <div class="alert alert-success fs-5 text-center mb-0">
+                        File <strong>{{ result.input }}</strong> matches the expected hash! Integrity confirmed.
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger fs-5 text-center mb-3">
+                        Hash mismatch! The file <strong>{{ result.input }}</strong> may be corrupted or modified.
+                    </div>
+                    <p class="mb-1"><strong>Expected:</strong> <span class="font-monospace text-muted">{{ result.expected }}</span></p>
+                    <p class="mb-0"><strong>Calculated:</strong> <span class="font-monospace text-danger">{{ result.hash }}</span></p>
+                {% endif %}
+
+            {% else %}
+                <h4 class="text-success mb-3">Results:</h4>
+                <p class="mb-1"><strong>Action Type:</strong> {{ result.type }}</p>
+                <p class="mb-3"><strong>Input:</strong> {{ result.input }}</p>
+
+                <p class="mb-1"><strong>Calculated MD5 Hash:</strong></p>
+                <div class="bg-dark text-light p-2 rounded mb-3 fs-5 font-monospace text-center">
+                    {{ result.hash }}
+                </div>
+
+                <a href="/download" class="btn btn-outline-success btn-sm" style="width: 250px;">
+                    Download Hash to file (results.txt)
+                </a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+</body>
+</html>
