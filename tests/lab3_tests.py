@@ -9,27 +9,26 @@ class TestLab3RC5(unittest.TestCase):
         self.w = 16
         self.r = 8
         self.b = 16
-        self.password = "31fdsFDSKL12DSdffy7sq433eif21FsdkhjDS"
-        self.key = derive_key(self.password, self.b)
+
+        self.test_passphrase = "du123123fdjsfl123dsadja!FDSA?"
+        self.key = derive_key(self.test_passphrase, self.b)
         self.rc5 = RC5(self.w, self.r, self.key)
 
     def test_bitwise_rotations(self):
         val = 0x1234
-
         self.assertEqual(self.rc5._rotate_left(val, 4), 0x2341)
-
         self.assertEqual(self.rc5._rotate_right(val, 4), 0x4123)
 
     def test_block_encryption_decryption(self):
-        A_orig = 0xABCD
-        B_orig = 0x1234
+        a_orig = 0xABCD
+        b_orig = 0x1234
 
-        enc_A, enc_B = self.rc5.encrypt_block(A_orig, B_orig)
+        enc_a, enc_b = self.rc5.encrypt_block(a_orig, b_orig)
+        dec_a, dec_b = self.rc5.decrypt_block(enc_a, enc_b)
 
-        dec_A, dec_B = self.rc5.decrypt_block(enc_A, enc_B)
+        self.assertEqual(a_orig, dec_a)
+        self.assertEqual(b_orig, dec_b)
 
-        self.assertEqual(A_orig, dec_A)
-        self.assertEqual(B_orig, dec_B)
 
     def test_file_encryption_decryption_cbc_pad(self):
         test_input = "test_input.txt"
@@ -41,10 +40,10 @@ class TestLab3RC5(unittest.TestCase):
         with open(test_input, "wb") as f:
             f.write(original_data)
 
-        rc5_cbc_pad_encrypt(test_input, test_enc, self.password, self.w, self.r, self.b)
+        rc5_cbc_pad_encrypt(test_input, test_enc, self.test_passphrase, self.w, self.r, self.b)
         self.assertTrue(os.path.exists(test_enc))
 
-        rc5_cbc_pad_decrypt(test_enc, test_dec, self.password, self.w, self.r, self.b)
+        rc5_cbc_pad_decrypt(test_enc, test_dec, self.test_passphrase, self.w, self.r, self.b)
 
         with open(test_dec, "rb") as f:
             decrypted_data = f.read()
@@ -63,7 +62,7 @@ class TestLab3RC5(unittest.TestCase):
         with open(test_input, "wb") as f:
             f.write(b"Confidential data.")
 
-        rc5_cbc_pad_encrypt(test_input, test_enc, self.password, self.w, self.r, self.b)
+        rc5_cbc_pad_encrypt(test_input, test_enc, self.test_passphrase, self.w, self.r, self.b)
 
         with self.assertRaises(ValueError):
             rc5_cbc_pad_decrypt(test_enc, test_dec, "wrong_password_123", self.w, self.r, self.b)
