@@ -10,8 +10,8 @@ class TestLab3RC5(unittest.TestCase):
         self.r = 8
         self.b = 16
 
-        self.test_passphrase = "du123123fdjsfl123dsadja!FDSA?"
-        self.key = derive_key(self.test_passphrase, self.b)
+        self.dummy_string = "du123123fdjsfl123dsadja!FDSA?"
+        self.key = derive_key(self.dummy_string, self.b)
         self.rc5 = RC5(self.w, self.r, self.key)
 
     def test_bitwise_rotations(self):
@@ -40,10 +40,10 @@ class TestLab3RC5(unittest.TestCase):
         with open(test_input, "wb") as f:
             f.write(original_data)
 
-        rc5_cbc_pad_encrypt(test_input, test_enc, self.test_passphrase, self.w, self.r, self.b)
+        rc5_cbc_pad_encrypt(test_input, test_enc, self.dummy_string, self.w, self.r, self.b)
         self.assertTrue(os.path.exists(test_enc))
 
-        rc5_cbc_pad_decrypt(test_enc, test_dec, self.test_passphrase, self.w, self.r, self.b)
+        rc5_cbc_pad_decrypt(test_enc, test_dec, self.dummy_string, self.w, self.r, self.b)
 
         with open(test_dec, "rb") as f:
             decrypted_data = f.read()
@@ -62,7 +62,7 @@ class TestLab3RC5(unittest.TestCase):
         with open(test_input, "wb") as f:
             f.write(b"Confidential data.")
 
-        rc5_cbc_pad_encrypt(test_input, test_enc, self.test_passphrase, self.w, self.r, self.b)
+        rc5_cbc_pad_encrypt(test_input, test_enc, self.dummy_string, self.w, self.r, self.b)
 
         with self.assertRaises(ValueError):
             rc5_cbc_pad_decrypt(test_enc, test_dec, "wrong_password_123", self.w, self.r, self.b)
