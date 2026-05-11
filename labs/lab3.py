@@ -97,19 +97,22 @@ def generate_iv(size):
     return bytes(iv)
 
 
+def _get_rc5_format_str(w):
+    if w == 16:
+        return '<2H'
+    if w == 32:
+        return '<2I'
+    if w == 64:
+        return '<2Q'
+    raise ValueError("Unsupported word size")
+
+
 def rc5_cbc_pad_encrypt(input_path, output_path, password, w=16, r=8, b=16):
     key = derive_key(password, b)
     rc5 = RC5(w, r, key)
 
     block_size = (2 * w) // 8
-    if w == 16:
-        format_str = '<2H'
-    elif w == 32:
-        format_str = '<2I'
-    elif w == 64:
-        format_str = '<2Q'
-    else:
-        raise ValueError("Unsupported word size")
+    format_str = _get_rc5_format_str(w)
 
     iv = generate_iv(block_size)
     iv_A, iv_B = struct.unpack(format_str, iv)
@@ -144,15 +147,7 @@ def rc5_cbc_pad_decrypt(input_path, output_path, password, w=16, r=8, b=16):
     rc5 = RC5(w, r, key)
 
     block_size = (2 * w) // 8
-
-    if w == 16:
-        format_str = '<2H'
-    elif w == 32:
-        format_str = '<2I'
-    elif w == 64:
-        format_str = '<2Q'
-    else:
-        raise ValueError("Unsupported word size")
+    format_str = _get_rc5_format_str(w)
 
     with open(input_path, 'rb') as f_in, open(output_path, 'wb') as f_out:
         iv_chunk = f_in.read(block_size)
